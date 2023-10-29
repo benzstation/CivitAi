@@ -292,3 +292,43 @@ function Get-CivitAiTags {
     #retun the result
     return $result
 }
+
+Function Download-CivitAiModel {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$uri,
+
+        [Parameter(Mandatory = $true)]
+        [string]$path
+    )
+
+    #Defining header; for the API to return downloaded file's filename proper need the content-disposition set
+    $headers = @{
+        'Content-Disposition' = "attachment"
+    }
+
+    #Adding API Key to the splatting hash if present
+    If ($apikey) {
+        $headers.Add('Authorization',"Bearer $apikey")
+    }
+    
+    #Splatting arguments
+    $RestMethodArgs = @{
+        Headers = $headers
+        Method = 'Get'
+        Uri = $uri
+        ContentType = 'application/json'
+        OutFile = $path
+    }
+
+    #Call the API
+    Try {
+        $result = Invoke-RestMethod @RestMethodArgs
+    }
+    Catch {
+        throw $PSItem
+    }
+
+    #retun the result
+    return $result
+}
