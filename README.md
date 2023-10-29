@@ -19,12 +19,16 @@ that provides stateless command-line interaction and automation for the
 
 ## How-to-use
 
-Simply copy the psd1 and psdm1 under '..Documents\WindowsPowerShell\Modules', open a fresh PowreShell session and start using the module's functions.
+Simply copy the psd1 and psdm1 under > '..Documents\WindowsPowerShell\Modules'
+Then, open a fresh PowreShell session and start using the module's functions.
 
-Alternatively, you can use Import-Module to load it up in your PowerShell session: 'Import-Module -FullyQualifiedName "...pathTo\CivitAi.psm1"'
+Alternatively, you can use Import-Module to load it up in your PowerShell session: 
+`Import-Module -FullyQualifiedName "...pathTo\CivitAi.psm1"`
 
-Once loaded, to get a list of commands or functions: 'Get-Command -Module CivitAi'
+Once loaded, to get a list of commands or functions: 
+`Get-Command -Module CivitAi`
 
-To get help on a specific command: 'Get-Help Download-CivitAiModel -Full'
+To get help on a specific command: 
+`Get-Help Download-CivitAiModel -Full`
 
 ----------
