@@ -19,9 +19,9 @@ that provides stateless command-line interaction and automation for the
 
 ## How-to-use
 
-Simply copy the psd1 and psdm1 under:
+Simply copy the module folder containing psd1 and psdm1 under:
 
-> '..Documents\WindowsPowerShell\Modules'
+> '...pathTo\Documents\WindowsPowerShell\Modules'
 
 *Then, open a fresh PowreShell session and start using the module's functions.*
 
