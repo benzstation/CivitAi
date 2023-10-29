@@ -23,7 +23,7 @@ Simply copy the psd1 and psdm1 under:
 
 > '..Documents\WindowsPowerShell\Modules'
 
-Then, open a fresh PowreShell session and start using the module's functions.
+*Then, open a fresh PowreShell session and start using the module's functions.*
 
 Alternatively, you can use Import-Module to load it up in your PowerShell session: 
 
