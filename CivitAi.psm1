@@ -35,7 +35,7 @@
 
     .LINK
 
-    https://github.com/benzstation/PSCivitAi/
+    https://github.com/benzstation/CivitAi/
     #>
 
     param(
@@ -83,6 +83,48 @@
 }
 
 Function Get-CivitAiCreators {
+    <#
+    .SYNOPSIS
+
+    Gets list of CivitAi creators.
+
+    .DESCRIPTION
+
+    Gets list of CivitAi creators and their information.
+    Can query a specify creator and its information.
+
+    .PARAMETER limit
+    The number of results to be returned per page. This can be a number between 0 and 200. By default, each page will return 20 results. If set to 0, it'll return all the items.
+
+    .PARAMETER page
+    The page from which to start fetching items.
+
+    .PARAMETER query
+    Search query to filter creators by username.
+
+    .INPUTS
+
+    None. You cannot pipe objects.
+
+    .OUTPUTS
+
+    PSCustomObject. It returns a PSCustomObject that includes the command result, including the metadata and any item(s) returned.
+
+    .EXAMPLE
+
+    PS> Get-CivitAiCreators -limit 20 -page 2 
+    Returns second page of 20 CivitAi model creators (21st-40th creators) and their information
+
+    .EXAMPLE
+
+    PS> Get-CivitAiCreators -query civitaiuser
+    Returns the creator's information
+
+    .LINK
+
+    https://github.com/benzstation/CivitAi/
+    #>
+
     param(
         [Parameter(Mandatory = $false)]
         [ValidateRange(0, 200)]
@@ -115,6 +157,66 @@ Function Get-CivitAiCreators {
 }
 
 Function Get-CivitAiImages {
+    <#
+    .SYNOPSIS
+
+    Gets list of CivitAi Images.
+
+    .DESCRIPTION
+
+    Gets list of CivitAi Images and their information.
+    Can query a specify Images and its information.
+
+    .PARAMETER limit
+    The number of results to be returned per page. This can be a number between 0 and 200. By default, each page will return 20 results. If set to 0, it'll return all the items
+
+    .PARAMETER postId
+    The ID of a post to get images from.
+
+    .PARAMETER modelId
+    The ID of a model to get images from (model gallery).
+
+    .PARAMETER modelVersionId
+    The ID of a model version to get images from (model gallery filtered to version).
+
+    .PARAMETER username
+    Filter to images from a specific user.
+
+    .PARAMETER nsfw
+    Filter to images that contain mature content flags or not (undefined returns all).
+
+    .PARAMETER sort
+    The order in which you wish to sort the results.
+
+    .PARAMETER period
+    The time frame in which the images will be sorted
+
+    .PARAMETER page
+    The page from which to start fetching items.
+
+    .INPUTS
+
+    None. You cannot pipe objects.
+
+    .OUTPUTS
+
+    PSCustomObject. It returns a PSCustomObject that includes the command result, including the metadata and any item(s) returned.
+
+    .EXAMPLE
+
+    PS> Get-CivitAiImages -limit 20 -page 2 
+    Returns second page of 20 CivitAi model images (21st-40th images) and their information
+
+    .EXAMPLE
+
+    PS> Get-CivitAiImages -username civitaiuser -model 8552
+    Returns the images from use civitaiuser using any version of the model 8552
+
+    .LINK
+
+    https://github.com/benzstation/CivitAi/
+    #>
+
     param(
         [Parameter(Mandatory = $false)]
         [ValidateRange(0, 200)]
@@ -167,6 +269,87 @@ Function Get-CivitAiImages {
 }
 
 function Get-CivitAiModels {
+    <#
+    .SYNOPSIS
+
+    Gets list of CivitAi models.
+
+    .DESCRIPTION
+
+    Gets list of CivitAi models and their information.
+    Can query a specify models and its information.
+
+    .PARAMETER limit
+    The number of results to be returned per page. This can be a number between 0 and 200. By default, each page will return 20 results. If set to 0, it'll return all the items
+
+    .PARAMETER page
+    The page from which to start fetching items.
+
+    .PARAMETER tag
+    Search query to filter models by tag
+
+    .PARAMETER username
+    Search query to filter models by user
+
+    .PARAMETER types
+    The type of model you want to filter with. If none is specified, it will return all types
+
+    .PARAMETER sort
+    The order in which you wish to sort the results
+
+    .PARAMETER period
+    The time frame in which the models will be sorted
+
+    .PARAMETER rating
+    The rating you wish to filter the models with. If none is specified, it will return models with any rating
+
+    .PARAMETER favorites
+    Filter to favorites of the authenticated user (this requires an API token or session cookie)
+
+    .PARAMETER hidden
+    Filter to hidden models of the authenticated user (this requires an API token or session cookie)
+
+    .PARAMETER primaryFileOnly
+    Only include the primary file for each model (This will use your preferred format options if you use an API token or session cookie)
+
+    .PARAMETER allowNoCredit
+    Filter to models that require or don't require crediting the creator
+
+    .PARAMETER allowDerivatives
+    Filter to models that allow or don't allow creating derivatives
+
+    .PARAMETER allowDifferentLicenses
+    Filter to models that allow or don't allow derivatives to have a different license
+
+    .PARAMETER allowCommercialUse
+    Filter to models based on their commercial permissions
+
+    .PARAMETER nsfw
+    If false, will return safer images and hide models that don't have safe images
+
+    .INPUTS
+
+    None. You cannot pipe objects.
+
+    .OUTPUTS
+
+    PSCustomObject. It returns a PSCustomObject that includes the command result, including the metadata and any item(s) returned.
+
+    .EXAMPLE
+
+    PS> Get-CivitAiModels -limit 20 -page 2 
+    Returns second page of 20 CivitAi models (21st-40th models) and their information
+
+    .EXAMPLE
+
+    PS> Get-CivitAiModels -tag car
+    Returns the models with tag car.
+
+    .LINK
+
+    https://github.com/benzstation/CivitAi/
+    #>
+
     param(
         [Parameter(Mandatory = $false)]
         [ValidateRange(0, 200)]
@@ -257,6 +440,36 @@ function Get-CivitAiModels {
 }
 
 function Get-CivitAiModelById {
+    <#
+    .SYNOPSIS
+
+    Gets a CivitAi models by its Id.
+
+    .DESCRIPTION
+
+    Gets a CivitAi model, by its Id, and its information.
+
+    .PARAMETER modelId
+    The ID of a model to information from.
+
+    .INPUTS
+
+    None. You cannot pipe objects.
+
+    .OUTPUTS
+
+    PSCustomObject. It returns a PSCustomObject that includes the command result, including the metadata and any item(s) returned.
+
+    .EXAMPLE
+
+    PS> Get-CivitAiModelById -modelId 8552
+    Returns the information from all versions of the model 8552
+
+    .LINK
+
+    https://github.com/benzstation/CivitAi/
+    #>
+
     param(
         [Parameter(Mandatory = $true)]
         [int]$modelId
@@ -279,6 +492,36 @@ function Get-CivitAiModelById {
 }
 
 function Get-CivitAiModelByVersionId {
+    <#
+    .SYNOPSIS
+
+    Gets a CivitAi model version by its Id.
+
+    .DESCRIPTION
+
+    Gets a CivitAi model version, by its Id, and its information.
+
+    .PARAMETER modelId
+    The ID of a model version to get information from.
+
+    .INPUTS
+
+    None. You cannot pipe objects.
+
+    .OUTPUTS
+
+    PSCustomObject. It returns a PSCustomObject that includes the command result, including the metadata and any item(s) returned.
+
+    .EXAMPLE
+
+    PS> Get-CivitAiModelByVersionId -modelId 10081
+    Returns the information of the model version 10081
+
+    .LINK
+
+    https://github.com/benzstation/CivitAi/
+    #>
+
     param(
         [Parameter(Mandatory = $true)]
         [int]$modelVersionId
@@ -301,6 +544,48 @@ function Get-CivitAiModelByVersionId {
 }
 
 function Get-CivitAiTags {
+    <#
+    .SYNOPSIS
+
+    Gets list of CivitAi tags.
+
+    .DESCRIPTION
+
+    Gets list of CivitAi tags and their information.
+    Can query a specify tag and its information.
+
+    .PARAMETER limit
+    The number of results to be returned per page. This can be a number between 0 and 200. By default, each page will return 20 results. If set to 0, it'll return all the items.
+
+    .PARAMETER page
+    The page from which to start fetching items.
+
+    .PARAMETER query
+    Search query to filter tags by name.
+
+    .INPUTS
+
+    None. You cannot pipe objects.
+
+    .OUTPUTS
+
+    PSCustomObject. It returns a PSCustomObject that includes the command result, including the metadata and any item(s) returned.
+
+    .EXAMPLE
+
+    PS> Get-CivitAiTags -limit 20 -page 2 
+    Returns second page of 20 CivitAi model tags (21st-40th creators) and their information
+
+    .EXAMPLE
+
+    PS> Get-CivitAiTags -query car
+    Returns the tag's information
+
+    .LINK
+
+    https://github.com/benzstation/CivitAi/
+    #>
+
     param(
         [Parameter(Mandatory = $false)]
         [ValidateRange(0, 200)]
@@ -333,6 +618,44 @@ function Get-CivitAiTags {
 }
 
 Function Invoke-CivitAiModelDownload {
+    <#
+    .SYNOPSIS
+
+    Downloads a CivitAi file.
+
+    .DESCRIPTION
+
+    Downloads a CivitAi file and store it locally.
+    
+    .PARAMETER uri
+    Specifies the Rest API Download uri.
+
+    .PARAMETER path
+    Specifies the local full path name, include file name and extension, to store the downloaded file.
+
+    .INPUTS
+
+    None. You cannot pipe objects.
+
+    .OUTPUTS
+
+    PSCustomObject. It returns a PSCustomObject that includes the command result, including the metadata and any item(s) returned.
+
+    .EXAMPLE
+
+    PS> Invoke-CivitAiModelDownload -uri 'https://civitai.com/api/download/models/10081' -path 'C:\sd\checkpoint\dvarchMultiPrompt_dvarchExterior.safetensors'
+    Downloads the model safetensors file.
+
+    .EXAMPLE
+
+    PS> Invoke-CivitAiModelDownload -uri 'https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/ceb881d2-fc45-4876-b84a-b718470dbe00/00055-1065154782.jpeg' -path 'C:\sd\checkpoint\dvarchMultiPrompt_dvarchExterior.jpg'
+    Downloads the model's showcase jpg file.
+
+    .LINK
+
+    https://github.com/benzstation/CivitAi/
+    #>
+
     param(
         [Parameter(Mandatory = $true)]
         [string]$uri,
