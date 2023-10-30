@@ -66,13 +66,13 @@
 
     #Call the API
     Try {
-        $result = Invoke-RestMethod @RestMethodArgs
-
-        #Sometimes API returns a malformed JSON because keys values case aren't consistent and PowerShell detects the type as String instead of an Object
-        #Replacing known values to lower case
-        If ($result.GetType().name -eq 'string') {
-            $result = $result.replace('Model','model').replace('Scale','scale').replace('""','keyname').replace('EasyNegative','easynegative').replace('Resources','resources') | ConvertFrom-Json
-        }
+        #Sometimes the API returns a malformed JSON because keys values case or empty keys name
+        #Using Invoke-WebRequest instead of Invoke-RestMethod to capture the RawContentStream and encode it as an UTF-8 String.
+        #This allows the code to fix key name and values and Convert it from a JSON string to a PSCustomObject
+        #The list of items to replace will need to be maintained over time as new malformed data may get added in the future
+        $webresult = Invoke-WebRequest @RestMethodArgs
+        $utf8stringresult = [Text.Encoding]::UTF8.GetString($webresult.RawContentStream.ToArray())
+        $result = $utf8stringresult.replace('NG_DeepNegative_V1_75T',('NG_DeepNegative_V1_75T'.ToLower())).replace('Prompt',('Prompt'.ToLower())).replace('Mode','mode').replace('Scale','scale').replace('""','"buggykey"').replace('EasyNegative','easynegative').replace('Resources','resources').replace('Size','size').replace('Resize','resize').replace('SiofraCipher',('siofraCipher'.ToLower())).replace('MaisieWilliams',('MaisieWilliams'.ToLower())) | ConvertFrom-Json  
     }
     Catch {
         throw $PSItem
