@@ -1,4 +1,43 @@
 ﻿Function Invoke-CivitAiRestMethod {
+    <#
+    .SYNOPSIS
+
+    Executes a Get method to the CivitAi Rest API.
+
+    .DESCRIPTION
+
+    Executes a Get method to the CivitAi Rest API.
+    If provided, will use the API Key to authenticate the execution.
+
+    .PARAMETER uri
+    Specifies the Rest API uri.
+
+    .PARAMETER apikey
+    Specifies the API Key to use.
+
+    .INPUTS
+
+    None. You cannot pipe objects.
+
+    .OUTPUTS
+
+    PSCustomObject. It returns a PSCustomObject that includes the Rest API call result, including the metadata and any item(s) returned.
+
+    .EXAMPLE
+
+    PS> Invoke-CivitAiRestMethod -uri 'https://civitai.com/api/v1/creators?&limit=1'
+    Returns a single CivitAi model creator using an unauthenticated call
+
+    .EXAMPLE
+
+    PS> Invoke-CivitAiRestMethod -uri 'https://civitai.com/api/v1/models?&limit=1&favorites=true' -apikey '..ewgr0983wt...'
+    Returns a single CivitAi favorite model using an authenticated call
+
+    .LINK
+
+    https://github.com/benzstation/PSCivitAi/
+    #>
+
     param(
         [Parameter(Mandatory = $true)]
         [string]$uri,
@@ -32,7 +71,7 @@
         #Sometimes API returns a malformed JSON because keys values case aren't consistent and PowerShell detects the type as String instead of an Object
         #Replacing known values to lower case
         If ($result.GetType().name -eq 'string') {
-            $result = $result.replace('Model','model').replace('Scale','scale').replace('""','"buggykey"').replace('embed:EasyNegative','embed:easynegative').replace('Resources','resources') | ConvertFrom-Json
+            $result = $result.replace('Model','model').replace('Scale','scale').replace('""','keyname').replace('EasyNegative','easynegative').replace('Resources','resources') | ConvertFrom-Json
         }
     }
     Catch {
@@ -293,7 +332,7 @@ function Get-CivitAiTags {
     return $result
 }
 
-Function Download-CivitAiModel {
+Function Invoke-CivitAiModelDownload {
     param(
         [Parameter(Mandatory = $true)]
         [string]$uri,

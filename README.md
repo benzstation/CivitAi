@@ -19,11 +19,11 @@ that provides stateless command-line interaction and automation for the
 
 ## How-to-use
 
-Simply copy the module folder containing psd1 and psdm1 under:
+Simply copy the 'CivitAi' module's folder containing psd1 and psdm1 under:
 
 > '...pathTo\Documents\WindowsPowerShell\Modules'
 
-*Then, open a fresh PowreShell session and start using the module's functions.*
+*Then, open a fresh PowerShell session and start using the module's functions.*
 
 Alternatively, you can use Import-Module to load it up in your PowerShell session: 
 
