@@ -68,7 +68,7 @@ Param (
     [string]$creator,
 
     [Parameter(Mandatory = $true)]
-    [string]$outputDir = "f:\sd",
+    [string]$outputDir,
 
     [Parameter(Mandatory = $false)]
     [ValidateSet('Default', 'Custom')]
@@ -78,7 +78,7 @@ Param (
     [switch]$excludeModelImage,
 
     [Parameter(Mandatory = $false)]
-    [string[]]$exclusionWords = ('pixel art', 'men','man', 'boy', 'male', 'cowboy', 'boyfriend'),
+    [string[]]$exclusionWords,
 
     [Parameter(Mandatory = $true)]
     [ValidateSet('Checkpoint', 'TextualInversion', 'Hypernetwork', 'AestheticGradient', 'LORA', 'Controlnet', 'Poses')]
