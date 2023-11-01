@@ -5,8 +5,8 @@ CivitAi PowerShell Module
 #### Table of Contents
 
 *   [Overview](#overview)
-*   [How-to-use the module](#How-to-use-module)
-*   [How-to-use the custom script](#How-to-use-script)
+*   [How-to-use the module](#How-to-use the module)
+*   [How-to-use the custom script](#How-to-use the custom script)
 
 ----------
 
