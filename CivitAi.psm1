@@ -72,7 +72,7 @@
         #The list of items to replace will need to be maintained over time as new malformed data may get added in the future
         $webresult = Invoke-WebRequest @RestMethodArgs
         $utf8stringresult = [Text.Encoding]::UTF8.GetString($webresult.RawContentStream.ToArray())
-        $result = $utf8stringresult.replace('NG_DeepNegative_V1_75T',('NG_DeepNegative_V1_75T'.ToLower())).replace('Prompt',('Prompt'.ToLower())).replace('Mode','mode').replace('Scale','scale').replace('""','"buggykey"').replace('EasyNegative','easynegative').replace('Resources','resources').replace('Size','size').replace('Resize','resize').replace('SiofraCipher',('siofraCipher'.ToLower())).replace('MaisieWilliams',('MaisieWilliams'.ToLower())) | ConvertFrom-Json  
+        $result = $utf8stringresult.replace('NG_DeepNegative_V1_75T',('NG_DeepNegative_V1_75T'.ToLower())).replace('Prompt',('Prompt'.ToLower())).replace('Mode','mode').replace('Scale','scale').replace('""','"buggykey"').replace('EasyNegative','easynegative').replace('Resources','resources').replace('Size','size').replace('Resize','resize').replace('SiofraCipher',('siofraCipher'.ToLower())).replace('MaisieWilliams',('MaisieWilliams'.ToLower())).replace('type=model','type=Model') | ConvertFrom-Json
     }
     Catch {
         throw $PSItem
@@ -661,7 +661,10 @@ Function Invoke-CivitAiModelDownload {
         [string]$uri,
 
         [Parameter(Mandatory = $true)]
-        [string]$path
+        [string]$path,
+
+        [Parameter(Mandatory = $false)]
+        [string]$apikey
     )
 
     #Defining header; for the API to return downloaded file's filename proper need the content-disposition set
