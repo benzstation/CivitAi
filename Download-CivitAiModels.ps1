@@ -106,10 +106,12 @@ Try {
     $totalmodelversionfileswithexcludedwords = 0
     $totalmodelversionfilesdownloaded = 0
     $totalmodelversionfilesnotfound = 0
+    $totalmodelversionfilesearlyaccess = 0
     $totalmodelversionfilesdownloadrequiredauth = 0
     $totalmodelversionfilesdownloadfailedauth = 0
     $totalmodelversionfilesdownloadtimedout = 0
     $totalmodelversionimagefilesdownloaded = 0
+    $totalmodelversionmissingimagefiles = 0
     
     $typeLoopIndex = 1
     ForEach ($type in $types) {
@@ -196,22 +198,12 @@ Try {
                 $modelVersionName = $modelVersion.name
                 $modelVersionId = $modelVersion.id
                 $modelVersionFiles = $modelVersion.files
-                $modelVersionImageFileDownloadUrl = $modelVersion.images[0].url
-                $modelVersionImageFileExtension = $modelVersionImageFileDownloadUrl.Split('.')[-1]
-                Switch ($outputNaming) {
-                    Default {
-                        $modelVersionImageFileName = $modelVersionFiles[0].name.Split('.')[0]
-                    }
-                    Custom {
-                        $modelVersionBaseModelCustomName = $modelVersion.basemodel -replace "[^a-zA-Z0-9_]", ''
-                        $modelCreatorCustomName = $modelCreator -replace "[^a-zA-Z0-9_]", ''
-                        $modelNameCustomName = $modelName -replace "[^a-zA-Z0-9_]", ''
-                        $modelVersionCustomName = $modelVersionName -replace "[^a-zA-Z0-9_]", ''
-                        $modelVersionImageFileName = @($modelVersionBaseModelCustomName, $modelCreatorCustomName, $modelNameCustomName, $modelVersionCustomName) -join '_'
-                        $modelVersionImageFilePath = "$outputDir\$type\$modelVersionImageFileName.$modelVersionImageFileExtension"
-                    }
+                If ($outputNaming -eq 'Custom') {
+                    $modelVersionBaseModelCustomName = $modelVersion.basemodel -replace "[^a-zA-Z0-9_]", ''
+                    $modelCreatorCustomName = $modelCreator -replace "[^a-zA-Z0-9_]", ''
+                    $modelNameCustomName = $modelName -replace "[^a-zA-Z0-9_]", ''
+                    $modelVersionCustomName = $modelVersionName -replace "[^a-zA-Z0-9_]", ''
                 }
-                $modelVersionImageFilePath = "$outputDir\$type\$modelVersionImageFileName.$modelVersionImageFileExtension"
 
                 #Display process index and bump the count for next iteration
                 "#### ($versionLoopIndex of $($inScopeModelversions.count)) $type $modelName $modelVersionName process started"
@@ -257,7 +249,7 @@ Try {
                     #Checkinf file virus scan result
                     If ($modelVersionFile.virusScanResult -ne 'Success') {
                         $totalmodelversionfileswithfailedscan++
-                        throw "####### $type file $modelVersionFileName has not succeeded the virus scan"
+                        "####### $type file $modelVersionFileName has not succeeded the virus scan"
                         continue
                     }
 
@@ -314,6 +306,14 @@ Try {
                                 "######"
                                 $retryCount = 0
                             }
+                            ElseIf ($PSItem.ErrorDetails.Message -match "Early Access") {
+                                Write-Error -Message "Forbidden - Early Access Model release"
+                                #Display process error
+                                $totalmodelversionfilesearlyaccess++
+                                "###### $type $modelName $modelVersionName $modelVersionFileName process errored out"
+                                "######"
+                                $retryCount = 0
+                            }
                             ElseIf ($PSItem.Exception.Message -match "401") {
                                 $totalmodelversionfilesdownloadrequiredauth++
                                 If ($apikey) {
@@ -330,7 +330,7 @@ Try {
                                 #Display process timeout
                                 $totalmodelversionfilesdownloadtimedout++
                                 "###### $type $modelName $modelVersionName $modelVersionFileName process timed out"
-                                throw $PSItem
+                                $PSItem
                             }
                             Else {
                                 $retryCount--
@@ -344,12 +344,80 @@ Try {
                     "##### Exclude image download switch is set - skipping it"
                     continue    
                 }
+                
+                If ($modelVersion.images) {
+                    $modelVersionImageFileDownloadUrl = $modelVersion.images[0].url
+                    $modelVersionImageFileExtension = $modelVersionImageFileDownloadUrl.Split('.')[-1]
+                    Switch ($outputNaming) {
+                        Default {
+                            $modelVersionImageFileName = $modelVersionFiles[0].name.Split('.')[0]
+                        }
+                        Custom {
+                            $modelVersionImageFileName = @($modelVersionBaseModelCustomName, $modelCreatorCustomName, $modelNameCustomName, $modelVersionCustomName) -join '_'
+                        }
+                    }
+                    $modelVersionImageFilePath = "$outputDir\$type\$modelVersionImageFileName.$modelVersionImageFileExtension"
+                    
+                    #Downloading first Image File
+                    "##### Downloading Model Version Image file"
+                    $retryCount = 3
+                    While ($retryCount -gt 0) {
+                        Try {
+    
+                            #Splatting arguments
+                            $invokeCivitAiModelImageDownload = @{
+                                uri = $modelVersionImageFileDownloadUrl
+                                path = $modelVersionImageFilePath.Replace("[",'').Replace("]",'')
+                            }
+                            
+                            #Adding API Key to the splatting hash if present
+                            If ($authDownload) {
+                                $invokeCivitAiModelImageDownload.Add('apikey', $apikey)
+                            }
 
-                #Downloading first Image File
-                "####### Downloading Model Version Image file"
-                $modelVersionImageFileDownloadResult = Invoke-CivitAiModelDownload -uri $modelVersionImageFileDownloadUrl -path $modelVersionImageFilePath.Replace("[",'').Replace("]",'')
-                $totalmodelversionimagefilesdownloaded++
-                "####### Done"
+                            #Downloading model version file
+                            $modelVersionImageFileDownloadResult = Invoke-CivitAiModelDownload @invokeCivitAiModelImageDownload
+                            $totalmodelversionimagefilesdownloaded++
+                            "####### Done"
+
+                            $retryCount = 0
+                            $authDownload = $false
+                        }
+                        Catch {
+                            If ($PSItem.Exception.Message -match "404") {
+                                Write-Error -Message "Model not found"
+                                #Display process error
+                                "###### $type $modelName $modelVersionName $modelVersionImageFileName process errored out"
+                                "######"
+                                $retryCount = 0
+                            }
+                            ElseIf ($PSItem.Exception.Message -match "401") {
+                                $totalmodelversionfilesdownloadrequiredauth++
+                                If ($apikey) {
+                                    $authDownload = $True
+                                }
+                                Else {
+                                    #Display process requires auth
+                                    Write-Error -Message "$type $modelName $modelVersionName $modelVersionImageFileName process requires authentication - provide an API Key"
+                                    $retryCount = 0
+                                }
+                            }
+                            ElseIf ($retryCount -eq 1) {
+                                #Display process timeout
+                                "###### $type $modelName $modelVersionName $modelVersionImageFileName process timed out"
+                                throw $PSItem
+                            }
+                            Else {
+                                $retryCount--
+                            }
+                        }
+                    }
+                    "##### Done"
+                }
+                Else {
+                    $totalmodelversionmissingimagefiles++
+                    "##### Model Version includes no Image file"
+                }
 
                 #Display process complete
                 "#### $type $modelName $modelVersionName process completed"
@@ -377,10 +445,12 @@ Try {
     "$totalmodelversionfileswithexcludedwords Total model version filename excluded because of an exclude word"
     "$totalmodelversionfilesdownloaded Total model version files downloaded"
     "$totalmodelversionfilesnotfound Total model version files not found"
+    "$totalmodelversionfilesearlyaccess Total model version files Early Access"
     "$totalmodelversionfilesdownloadrequiredauth Total model version files required authentication"
     "$totalmodelversionfilesdownloadfailedauth Total model version files downloaded failed authentication"
     "$totalmodelversionfilesdownloadtimedout Total model version files download timed out"
     "$totalmodelversionimagefilesdownloaded Total model version images downloaded"
+    "$totalmodelversionmissingimagefiles Total model version without image files"
 }
 Catch {
     throw $PSItem
